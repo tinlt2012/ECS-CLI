@@ -1,0 +1,103 @@
+{
+    "family": "Tinlt",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "runtimePlatform": {
+        "cpuArchitecture": "ARM64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "containerDefinitions": [
+        {
+            "name": "nginx",
+            "image": "036855062023.dkr.ecr.us-east-1.amazonaws.com/nginx-php:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "nginx-80-tcp",
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "MYSQL_DATABASE",
+                    "value": "dbname"
+                },
+                {
+                    "name": "MYSQL_PASSWORD",
+                    "value": "dbpassword"
+                },
+                {
+                    "name": "MYSQL_HOST",
+                    "value": "0.0.0.0"
+                },
+                {
+                    "name": "MYSQL_USER",
+                    "value": "dbuser"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/Tinlt",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        },
+        {
+            "name": "mysql",
+            "image": "036855062023.dkr.ecr.us-east-1.amazonaws.com/mysql:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "mysql-3306-tcp",
+                    "containerPort": 3306,
+                    "hostPort": 3306,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": false,
+            "environment": [
+                {
+                    "name": "MYSQL_DATABASE",
+                    "value": "dbname"
+                },
+                {
+                    "name": "MYSQL_PASSWORD",
+                    "value": "dbpassword"
+                },
+                {
+                    "name": "MYSQL_ROOT_PASSWORD",
+                    "value": "yourpassword"
+                },
+                {
+                    "name": "MYSQL_USER",
+                    "value": "dbuser"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/Tinlt/mysql",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ],
+    "taskRoleArn": "arn:aws:iam::036855062023:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::036855062023:role/ecsTaskExecutionRole"
+}
